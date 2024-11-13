@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Data Hafalan Santri</title>
+    <style>
+        /* Style definitions tetap sama seperti sebelumnya */
+        :root {
+            --primary: #2a5298;
+            --secondary: #1e3c72;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            color: blue;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-size: 15px;
+    /* Tambahan animasi */
+    padding: 1rem;
+    background: linear-gradient(45deg, #3498db, #9b59b6, #e74c3c, #f1c40f);
+    background-size: 200%;
+    border-radius: 10px;
+    color: white;
+    animation: background-animation 4s ease infinite;
+}
+
+/* Keyframes untuk animasi background */
+@keyframes background-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .santri-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .santri-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .card-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .card-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .quality-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: white;
+        }
+
+        .quality-excellent { background-color: var(--success); }
+        .quality-good { background-color: var(--primary); }
+        .quality-needs-work { background-color: var(--warning); }
+        .quality-repeat { background-color: var(--danger); }
+
+        .recommendation {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .recommend-lanjut {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .recommend-ulang {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .filter-group {
+                flex-direction: column;
+            }
+            
+            .form-control {
+                width: 100%;
+            }
+            
+            .santri-list {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* Tambahan style untuk rentang ayat */
+        .ayat-range {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .ayat-range input {
+            flex: 1;
+        }
+        
+        .separator {
+            font-weight: bold;
+            color: #666;
+        }
+        
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.toggle-label input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+}
+
+#detailInputs.hidden {
+    display: none;
+}
+    </style>
+    </head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Input Data Hafalan Santri</h1>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-primary" onclick="openModal()">Tambah Data Santri</button>
+            <button class="btn btn-primary" onclick="exportToCSV()">Export ke CSV</button>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <input type="text" id="searchInput" class="form-control" placeholder="Cari santri...">
+                <select id="kelasFilter" class="form-control">
+                    <option value="">Semua Kelas</option>
+                    <option value="A">I ABA Baniyn</option>
+                    <option value="B">II ABA Baniyn</option>
+                    <option value="C">I A ABA Banaat</option>
+                    <option value="D">I B ABA Banaat</option>
+                    <option value="E">II ABA Banaat</option>
+                </select>
+                <select id="surahFilter" class="form-control">
+                    <option value="">Semua Surah</option>
+                </select>
+                <select id="qualityFilter" class="form-control">
+                    <option value="">Semua Kualitas</option>
+                    <option value="excellent">Jayyid Jiddan</option>
+                    <option value="good">Jayyid</option>
+                    <option value="needs-work">Perlu Perbaikan</option>
+                    <option value="repeat">Harus Diulang</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="santri-list" id="santriList"></div>
+    </div>
+
+    <!-- Modal Form -->
+    <div class="modal" id="santriModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Tambah Data Santri</h2>
+            <form id="santriForm" onsubmit="handleSubmit(event)">
+                <input type="hidden" id="santriId">
+                
+                <div class="form-group">
+                    <label for="name">Nama Santri</label>
+                    <input type="text" id="name" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="kelas">Kelas</label>
+                    <select id="kelas" class="form-control" required>
+                        <option value="A">I ABA Baniyn</option>
+                        <option value="B">II ABA Baniyn</option>
+                        <option value="C">I A ABA Banaat</option>
+                        <option value="D">I B ABA Banaat</option>
+                        <option value="E">II ABA Banaat</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="surah">Nama Surah</label>
+                    <select id="surah" class="form-control" required>
+                        <!-- Will be populated by JavaScript -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Rentang Ayat</label>
+                    <div class="ayat-range">
+                        <input type="number" id="ayatAwal" class="form-control" min="1" placeholder="Ayat awal" required>
+                        <span class="separator">-</span>
+                        <input type="number" id="ayatAkhir" class="form-control" min="1" placeholder="Ayat akhir" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="juz">Juz ke</label>
+                    <input type="number" id="juz" class="form-control" min="1" max="30" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="quality">Kualitas Hafalan</label>
+                    <select id="quality" class="form-control" required>
+                        <option value="excellent">Jayyid Jiddan</option>
+                        <option value="good">Jayyid</option>
+                        <option value="needs-work">Perlu Perbaikan</option>
+                        <option value="repeat">Harus Diulang</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="enableDetails" checked>
+                        Aktifkan Input Detail (Lembar, Halaman, Baris)
+                    </label>
+                </div>
+
+                <div id="detailInputs">
+                    <div class="form-group">
+                        <label for="lembar">Jumlah Lembar</label>
+                        <input type="number" id="lembar" class="form-control" min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="halaman">Jumlah Halaman</label>
+                        <input type="number" id="halaman" class="form-control" min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="baris">Jumlah Baris</label>
+                        <input type="number" id="baris" class="form-control" min="0" max="15">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button type="button" class="btn btn-danger" onclick="closeModal()">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+    <script>
+        // Data management
+        let santriData = JSON.parse(localStorage.getItem('santriData')) || [];
+        
+        const surahNames = [
+            "Al-Fatihah", "Al-Baqarah", "Ali 'Imran", "An-Nisa'", "Al-Ma'idah",
+"Al-An'am", "Al-A'raf", "Al-Anfal", "At-Taubah", "Yunus",
+"Hud", "Yusuf", "Ar-Ra'd", "Ibrahim", "Al-Hijr",
+"An-Nahl", "Al-Isra'", "Al-Kahf", "Maryam", "Ta-Ha",
+"Al-Anbiya'", "Al-Hajj", "Al-Mu'minun", "An-Nur", "Al-Furqan",
+"Ash-Shu'ara'", "An-Naml", "Al-Qasas", "Al-Ankabut", "Ar-Rum",
+"Luqman", "As-Sajdah", "Al-Ahzab", "Saba'", "Fatir",
+"Ya-Sin", "As-Saffat", "Sad", "Az-Zumar", "Ghafir",
+"Fussilat", "Ash-Shura", "Az-Zukhruf", "Ad-Dukhan", "Al-Jathiyah",
+"Al-Ahqaf", "Muhammad", "Al-Fath", "Al-Hujurat", "Qaf",
+"Adh-Dhariyat", "At-Tur", "An-Najm", "Al-Qamar", "Ar-Rahman",
+"Al-Waqi'ah", "Al-Hadid", "Al-Mujadilah", "Al-Hashr", "Al-Mumtahanah",
+"As-Saff", "Al-Jumu'ah", "Al-Munafiqun", "At-Taghabun", "At-Talaq",
+"At-Tahrim", "Al-Mulk", "Al-Qalam", "Al-Haqqah", "Al-Ma'arij",
+"Nuh", "Al-Jinn", "Al-Muzzammil", "Al-Muddaththir", "Al-Qiyamah",
+"Al-Insan", "Al-Mursalat", "An-Naba'", "An-Nazi'at", "Abasa",
+"At-Takwir", "Al-Infitar", "Al-Mutaffifin", "Al-Inshiqaq", "Al-Buruj",
+"At-Tariq", "Al-A'la", "Al-Ghashiyah", "Al-Fajr", "Al-Balad",
+"Ash-Shams", "Al-Lail", "Ad-Duha", "Ash-Sharh", "At-Tin",
+"Al-Alaq", "Al-Qadr", "Al-Bayyina", "Az-Zalzalah", "Al-Adiyat",
+"Al-Qari'ah", "At-Takathur", "Al-Asr", "Al-Humazah", "Al-Fil",
+"Quraysh", "Al-Ma'un", "Al-Kawthar", "Al-Kafirun", "An-Nasr",
+"Al-Masad", "Al-Ikhlas", "Al-Falaq", "An-Nas"
+        ];
+
+        // Initialize
+        function init() {
+            populateSurahOptions();
+            setupEventListeners();
+            filterAndRenderData();
+        }
+
+        // Populate surah options
+        function populateSurahOptions() {
+            const surahSelects = document.querySelectorAll('#surahFilter, #surah');
+            surahSelects.forEach(select => {
+                select.innerHTML = select.id === 'surahFilter' 
+                    ? '<option value="">Semua Surah</option>' 
+                    : '';
+                surahNames.forEach(surah => {
+                    const option = document.createElement('option');
+                    option.value = surah;
+                    option.textContent = surah;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            document.getElementById('kelasFilter').addEventListener('change', filterAndRenderData);
+            document.getElementById('surahFilter').addEventListener('change', filterAndRenderData);
+            document.getElementById('qualityFilter').addEventListener('change', filterAndRenderData);
+            
+            // Validasi rentang ayat
+            document.getElementById('ayatAkhir').addEventListener('change', validateAyatRange);
+            document.getElementById('ayatAwal').addEventListener('change', validateAyatRange);
+        }
+
+        // Validate ayat range
+        function validateAyatRange() {
+            const ayatAwal = parseInt(document.getElementById('ayatAwal').value);
+            const ayatAkhir = parseInt(document.getElementById('ayatAkhir').value);
+            
+            if (ayatAkhir < ayatAwal) {
+                alert('Ayat akhir tidak boleh lebih kecil dari ayat awal');
+                document.getElementById('ayatAkhir').value = ayatAwal;
+            }
+        }
+
+        // Handle search with debounce
+        let searchTimeout;
+        function handleSearch(e) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const searchTerm = e.target.value.toLowerCase();
+                filterAndRenderData();
+            }, 300);
+        }
+
+        // Render santri list
+        function renderSantriList(data) {
+            const santriList = document.getElementById('santriList');
+            santriList.innerHTML = '';
+            
+            if (data.length === 0) {
+                santriList.innerHTML = '<p class="text-center">Tidak ada data yang ditemukan</p>';
+                return;
+            }
+            
+            data.forEach(santri => {
+                const card = createSantriCard(santri);
+                santriList.appendChild(card);
+            });
+        }
+
+        // Create santri card with improved layout
+        function createSantriCard(santri) {
+            const qualityText = {
+                excellent: 'Jayyid Jiddan',
+                good: 'Jayyid',
+                'needs-work': 'Perlu Perbaikan',
+                repeat: 'Harus Diulang'
+            };
+
+            const card = document.createElement('div');
+            card.className = 'santri-card';
+            card.innerHTML = `
+                <div class="card-actions">
+                    <button class="card-btn btn-primary" onclick="editSantri('${santri.id}')">Edit</button>
+                    <button class="card-btn btn-danger" onclick="deleteSantri('${santri.id}')">Hapus</button>
+                </div>
+                <h3>${santri.name} - Kelas ${santri.kelas}</h3>
+                <div class="hafalan-details">
+                    <p>Surah: ${santri.surah}</p>
+                    <p>Ayat: ${santri.ayatAwal} - ${santri.ayatAkhir}</p>
+                    <p>Juz: ${santri.juz}</p>
+                    <p>Lembar: ${santri.lembar}</p>
+                    <p>Halaman: ${santri.halaman}</p>
+                    <p>Baris: ${santri.baris}</p>
+                    <p>Kualitas: <span class="quality-badge quality-${santri.quality}">
+                        ${qualityText[santri.quality]}
+                    </span></p>
+                </div>
+            `;
+            return card;
+        }
+
+        // Filter and render data with improved filtering
+        function filterAndRenderData() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const kelasFilter = document.getElementById('kelasFilter').value;
+            const surahFilter = document.getElementById('surahFilter').value;
+            const qualityFilter = document.getElementById('qualityFilter').value;
+
+            const filtered = santriData.filter(santri => 
+                (!searchTerm || 
+                    santri.name.toLowerCase().includes(searchTerm) ||
+                    santri.kelas.toLowerCase().includes(searchTerm) ||
+                    santri.surah.toLowerCase().includes(searchTerm)) &&
+                (!kelasFilter || santri.kelas === kelasFilter) &&
+                (!surahFilter || santri.surah === surahFilter) &&
+                (!qualityFilter || santri.quality === qualityFilter)
+            );
+
+            renderSantriList(filtered);
+        }
+
+        // Modal functions with animation
+        function openModal() {
+            document.getElementById('modalTitle').textContent = 'Tambah Data Santri';
+            document.getElementById('santriForm').reset();
+            document.getElementById('santriId').value = '';
+            const modal = document.getElementById('santriModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('santriModal');
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+
+        // Handle form submission with improved validation
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            const enableDetails = document.getElementById('enableDetails').checked;
+            
+            const formData = {
+                id: document.getElementById('santriId').value || Date.now().toString(),
+                name: document.getElementById('name').value.trim(),
+                kelas: document.getElementById('kelas').value,
+                surah: document.getElementById('surah').value,
+                ayatAwal: parseInt(document.getElementById('ayatAwal').value),
+                ayatAkhir: parseInt(document.getElementById('ayatAkhir').value),
+                juz: parseInt(document.getElementById('juz').value),
+                quality: document.getElementById('quality').value,
+                lembar: enableDetails ? Math.max(0, parseInt(document.getElementById('lembar').value) || 0) : 0,
+                halaman: enableDetails ? Math.max(0, parseInt(document.getElementById('halaman').value) || 0) : 0,
+                baris: enableDetails ? Math.max(0, parseInt(document.getElementById('baris').value) || 0) : 0
+            };
+
+            if (!validateForm(formData)) {
+                return;
+            }
+
+            const index = santriData.findIndex(s => s.id === formData.id);
+            if (index !== -1) {
+                santriData[index] = formData;
+            } else {
+                santriData.push(formData);
+            }
+
+            localStorage.setItem('santriData', JSON.stringify(santriData));
+            closeModal();
+            filterAndRenderData();
+        }
+
+        function validateForm(data) {
+            if (data.name.length < 2) {
+                alert('Nama santri terlalu pendek');
+                return false;
+            }
+            if (data.ayatAkhir < data.ayatAwal) {
+                alert('Ayat akhir tidak boleh lebih kecil dari ayat awal');
+                return false;
+            }
+            if (data.juz < 1 || data.juz > 30) {
+                alert('Juz harus antara 1 dan 30');
+                return false;
+            }
+            
+            const enableDetails = document.getElementById('enableDetails').checked;
+            if (enableDetails) {
+                if (data.lembar < 0) {
+                    alert('Jumlah lembar tidak boleh negatif');
+                    return false;
+                }
+                if (data.halaman < 0) {
+                    alert('Jumlah halaman tidak boleh negatif');
+                    return false;
+                }
+                if (data.baris < 0 || data.baris > 15) {
+                    alert('Jumlah baris harus antara 0 dan 15');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Improved form validation
+        function validateForm(data) {
+    if (data.name.length < 2) {
+        alert('Nama santri terlalu pendek');
+        return false;
+    }
+    if (data.ayatAkhir < data.ayatAwal) {
+        alert('Ayat akhir tidak boleh lebih kecil dari ayat awal');
+        return false;
+    }
+    if (data.juz < 1 || data.juz > 30) {
+        alert('Juz harus antara 1 dan 30');
+        return false;
+    }
+    
+    const enableDetails = document.getElementById('enableDetails').checked;
+    if (enableDetails) {
+        if (data.lembar < 0) {
+            alert('Jumlah lembar harus minimal 1');
+            return false;
+        }
+        if (data.baris > 15) {
+            alert('Jumlah baris tidak boleh lebih dari 15');
+            return false;
+        }
+    }
+    return true;
+}
+
+        // Edit santri with proper data loading
+        function editSantri(id) {
+            const santri = santriData.find(s => s.id === id);
+            if (santri) {
+                document.getElementById('modalTitle').textContent = 'Edit Data Santri';
+                document.getElementById('santriId').value = santri.id;
+                document.getElementById('name').value = santri.name;
+                document.getElementById('kelas').value = santri.kelas;
+                document.getElementById('surah').value = santri.surah;
+                document.getElementById('ayatAwal').value = santri.ayatAwal;
+                document.getElementById('ayatAkhir').value = santri.ayatAkhir;
+                document.getElementById('juz').value = santri.juz;
+                document.getElementById('lembar').value = santri.lembar;
+                document.getElementById('halaman').value = santri.halaman;
+                document.getElementById('baris').value = santri.baris;
+document.getElementById('quality').value = santri.quality;
+                openModal();
+            }
+        }
+
+        // Delete santri with confirmation
+        function deleteSantri(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus data santri ini?')) {
+                santriData = santriData.filter(s => s.id !== id);
+                localStorage.setItem('santriData', JSON.stringify(santriData));
+                filterAndRenderData();
+                
+                // Tampilkan notifikasi
+                showNotification('Data santri berhasil dihapus', 'success');
+            }
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Export to CSV with improved formatting
+        function exportToCSV() {
+            const headers = [
+                'ID',
+                'Nama',
+                'Kelas',
+                'Surah',
+                'Ayat Awal',
+                'Ayat Akhir',
+                'Juz',
+                'Lembar',
+                'Halaman',
+                'Baris',
+                'Kualitas'
+            ];
+
+            // Format CSV content with proper escaping
+            const formatCSVField = (field) => {
+                const stringField = field.toString();
+                if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
+                    return `"${stringField.replace(/"/g, '""')}"`;
+                }
+                return stringField;
+            };
+
+            const csvContent = [
+                headers.join(','),
+                ...santriData.map(santri => [
+                    santri.id,
+                    santri.name,
+                    santri.kelas,
+                    santri.surah,
+                    santri.ayatAwal,
+                    santri.ayatAkhir,
+                    santri.juz,
+                    santri.lembar,
+                    santri.halaman,
+                    santri.baris,
+                    santri.quality
+                ].map(formatCSVField).join(','))
+            ].join('\n');
+
+            // Create and trigger download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const date = new Date().toISOString().split('T')[0];
+            link.href = URL.createObjectURL(blob);
+            link.download = `data_hafalan_santri_${date}.csv`;
+            link.click();
+            
+            // Cleanup
+            URL.revokeObjectURL(link.href);
+            showNotification('Data berhasil diexport ke CSV', 'success');
+        }
+
+        // Add additional helper functions
+        function getQualityText(quality) {
+            const qualityMap = {
+                excellent: 'Jayyid Jiddan',
+                good: 'Jayyid',
+                'needs-work': 'Perlu Perbaikan',
+                repeat: 'Harus Diulang'
+            };
+            return qualityMap[quality] || quality;
+        }
+
+        // Add statistics calculation
+        function calculateStatistics() {
+            const stats = {
+                totalSantri: santriData.length,
+                qualityDistribution: {
+                    excellent: 0,
+                    good: 0,
+                    'needs-work': 0,
+                    repeat: 0
+                },
+                kelasDistribution: {}
+            };
+
+            santriData.forEach(santri => {
+                // Count quality distribution
+                stats.qualityDistribution[santri.quality]++;
+                
+                // Count kelas distribution
+                stats.kelasDistribution[santri.kelas] = 
+                    (stats.kelasDistribution[santri.kelas] || 0) + 1;
+            });
+
+            return stats;
+        }
+
+        // Add data backup functionality
+        function backupData() {
+            const backup = {
+                data: santriData,
+                timestamp: new Date().toISOString(),
+                version: '1.0'
+            };
+
+            const blob = new Blob([JSON.stringify(backup, null, 2)], 
+                { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `backup_hafalan_santri_${backup.timestamp.split('T')[0]}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(link.href);
+            showNotification('Backup data berhasil dibuat', 'success');
+        }
+
+        // Add data restore functionality
+        function restoreData(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const backup = JSON.parse(e.target.result);
+                    if (backup.version === '1.0' && Array.isArray(backup.data)) {
+                        santriData = backup.data;
+                        localStorage.setItem('santriData', JSON.stringify(santriData));
+                        filterAndRenderData();
+                        showNotification('Data berhasil dipulihkan', 'success');
+                    } else {
+                        throw new Error('Format backup tidak valid');
+                    }
+                } catch (error) {
+                    showNotification('Gagal memulihkan data: ' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Add form input validation helper
+        function validateInput(input, min, max, errorMessage) {
+            const value = parseInt(input.value);
+            if (isNaN(value) || value < min || value > max) {
+                alert(errorMessage);
+                input.value = '';
+                return false;
+            }
+            return true;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Add event listener for window unload to save data
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('santriData', JSON.stringify(santriData));
+        });
+document.getElementById('enableDetails').addEventListener('change', function() {
+    const detailInputs = document.getElementById('detailInputs');
+    const inputs = detailInputs.querySelectorAll('input');
+    
+    if (this.checked) {
+        detailInputs.classList.remove('hidden');
+        inputs.forEach(input => input.required = true);
+    } else {
+        detailInputs.classList.add('hidden');
+        inputs.forEach(input => {
+            input.required = false;
+            input.value = ''; // Reset nilai input
+        });
+    }
+});
+    </script>
+</body>
+  </html>
