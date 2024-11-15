@@ -41,7 +41,7 @@
     font-size: 15px;
     /* Tambahan animasi */
     padding: 1rem;
-    background: linear-gradient(45deg, #3498db, #9b59b6, #e74c3c, #f1c40f);
+    background:linear-gradient(45deg, #27ae60, #2ecc71, #1abc9c, #16a085);
     background-size: 200%;
     border-radius: 10px;
     color: white;
@@ -304,9 +304,17 @@
                 <input type="hidden" id="santriId">
                 
                 <div class="form-group">
-                    <label for="name">Nama Santri</label>
-                    <input type="text" id="name" class="form-control" required>
-                </div>
+                    <div class="form-group">
+    <label for="name">Nama Santri:</label>
+    <select id="name" class="form-control" required>
+        <option value="" disabled selected>Pilih Nama Santri</option>
+        <option value="Ahmad">Ahmad</option>
+        <option value="Aisyah">Aisyah</option>
+        <option value="Fatimah">Fatimah</option>
+        <option value="Zaid">Zaid</option>
+        <option value="Umar">Umar</option>
+    </select>
+</div>
 
                 <div class="form-group">
                     <label for="kelas">Kelas</label>
@@ -862,4 +870,4 @@ document.getElementById('enableDetails').addEventListener('change', function() {
 });
     </script>
 </body>
-  </html>
+                </html>
